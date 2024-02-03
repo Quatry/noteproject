@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 
 from api.views import NoteListCreateAPIView, NoteRetrieveUpdateDestroyAPIView, MyTokenObtainPairView, RegisterView, \
-    getProfile, updateProfile, getNotes, ProfileGetPutAPI
+    ProfileGetPutAPI
 
 urlpatterns = [
     path('notes', NoteListCreateAPIView.as_view()),
@@ -13,8 +13,5 @@ urlpatterns = [
     path('token/logout', TokenBlacklistView.as_view(), name='token_blacklist'),
 
     path('register', RegisterView.as_view(), name='auth_register'),
-
-#     path('profile', getProfile, name='profile'),
-    path('profile/update', updateProfile, name='update-profile'),
     path('profile', ProfileGetPutAPI.as_view())
 ]
