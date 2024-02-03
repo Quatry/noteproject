@@ -37,6 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create(
             username=validated_data['username'],
             bio=validated_data['bio'],
+            cover_photo = validated_data['cover_photo'],
         )
 
         user.set_password(validated_data['password'])
