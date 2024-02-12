@@ -1,8 +1,4 @@
-import rest_framework_simplejwt
-from django.shortcuts import render
-from rest_framework import generics, permissions, status
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -38,20 +34,27 @@ class ProfileGetPutAPI(APIView):
         return Response(serializer.data)
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def getNotes(request):
-#     public_notes = Note.objects.order_by('-updated')[:10]
-#     user_notes = request.user.notes.all().order_by('-updated')[:10]
-#     notes = user_notes  # | public_notes - Для вывода всех записей всех юзеров
-#     serializer = NoteSerializer(notes, many=True)
-#     return Response(serializer.data)
-
-
 class NoteListCreateAPIView(generics.ListCreateAPIView):
     queryset = Note.objects.all()
     permission_classes = [IsAuthenticated, ]
     serializer_class = NoteSerializer
+
+    def list(self, request):
+        public_notes = Note.objects.order_by('-updated')[:10]
+        user_notes = request.user.notes.all().order_by('-updated')[:10]
+        notes = user_notes | public_notes  # - Для вывода всех записей всех юзеров
+        serializer = NoteSerializer(notes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = {
+            "body": request.data['body'],
+            "user": request.user.id,
+        }
+        serializer = NoteSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
 
 
 class NoteRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
